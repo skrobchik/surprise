@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<head>
+    <title>Christmas?</title>
+</head>
+<script>
+    // change these when updating secret
+    const msg_hash = 3325544234522493;
+    const msg_encrypted = 7579247;
+
+    // https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
+    const cyrb53 = (str, seed = 0) => {
+        let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+        for(let i = 0, ch; i < str.length; i++) {
+            ch = str.charCodeAt(i);
+            h1 = Math.imul(h1 ^ ch, 2654435761);
+            h2 = Math.imul(h2 ^ ch, 1597334677);
+        }
+        h1  = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+        h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+        h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+        h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    
+        return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    };
+
+    const num2char = {
+        '0': 'r',
+        '1': '1',
+        '2': 'v',
+        '3': '3',
+        '4': 'z',
+        '5': '5',
+        '6': '6',
+        '7': '7',
+        '8': 'n',
+        '9': 'o',
+    };
+
+    const submitSecret = () => {
+        console.log("Test")
+        const secretText = document.getElementById("secret").value;
+        const secret = parseInt(secretText, 10) 
+        const feedback = document.getElementById("feedback");
+        if(isNaN(secret)) {
+            feedback.innerHTML = secretText + " is wrong"
+            feedback.className = "fail"
+            return;
+        }
+
+        const msg_decrypted = msg_encrypted ^ parseInt(secret, 10)
+        var msg_decyphered = (msg_decrypted.toString() * 6391).toString()
+        for (const [key, value] of Object.entries(num2char)) {
+            msg_decyphered = msg_decyphered.replaceAll(key, value)
+        }
+        if(cyrb53(msg_decyphered) == msg_hash){
+            feedback.innerHTML = "Cheers 🍻, you got it! Your next code is " + msg_decyphered + ". The location is C55H+WR Barcelona, Spain." 
+            feedback.className = "success"
+        } else {
+            feedback.innerHTML = secretText + " is wrong"
+            feedback.className = "fail"
+        }
+    };
+
+
+</script>
+<style>
+    body {
+        background: gray;
+        text-align: center;
+        font-style: italic;
+        font-weight: bold;
+        font-size: x-large;
+
+    }
+    label {
+        color: gainsboro;
+    }
+    .success {
+        color: greenyellow;
+    }
+    .fail {
+        color: darkred;
+    }
+</style>
+<body>
+    <label for="secret">Enter Secret Code:</label>
+
+    <input type="text" id="secret" name="secret" required minlength="8" maxlength="8"/>
+
+    <button onclick="submitSecret()">Submit</button>
+
+    <p id="feedback"></p>
+</body>
+</html>
