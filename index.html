@@ -4,8 +4,10 @@
 </head>
 <script>
     // change these when updating secret
+    const msg_encrypted = 4961716;
+    
+    // change if updating message
     const msg_hash = 3325544234522493;
-    const msg_encrypted = 7579247;
 
     // https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
     const cyrb53 = (str, seed = 0) => {
